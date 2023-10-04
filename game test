@@ -1,0 +1,68 @@
+// Basic Battle Royale Game in JavaScript
+
+// Initialize game variables
+let players = [];
+let loot = [];
+
+// Create Player object
+function Player(name, health, weapon) {
+  this.name = name;
+  this.health = health;
+  this.weapon = weapon;
+  this.position = {x: 0, y: 0};
+}
+
+// Create Loot object
+function Loot(type, position) {
+  this.type = type;
+  this.position = position;
+}
+
+// Create random player and loot objects
+for (let i = 0; i < 10; i++) {
+  let randomX = Math.floor(Math.random() * 100);
+  let randomY = Math.floor(Math.random() * 100);
+  players.push(new Player("Player " + i, 100, "Pistol"));
+  loot.push(new Loot("Ammo", {x: randomX, y: randomY}));
+}
+
+// Start the game loop
+while (players.length > 1) {
+  // Update player positions randomly
+  for (let i = 0; i < players.length; i++) {
+    let randomX = Math.floor(Math.random() * 10) - 5;
+    let randomY = Math.floor(Math.random() * 10) - 5;
+    players[i].position.x += randomX;
+    players[i].position.y += randomY;
+  }
+  // Check for player collisions with loot
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < loot.length; j++) {
+      if (players[i].position.x === loot[j].position.x && players[i].position.y === loot[j].position.y) {
+        if (loot[j].type === "Ammo") {
+          players[i].weapon = "Assault Rifle";
+        }
+        loot.splice(j, 1);
+        j--;
+      }
+    }
+  }
+  // Check for player collisions with other players
+  for (let i = 0; i < players.length; i++) {
+    for (let j = i + 1; j < players.length; j++) {
+      if (players[i].position.x === players[j].position.x && players[i].position.y === players[j].position.y) {
+        // Battle!
+        let attacker = players[i];
+        let defender = players[j];
+        defender.health -= 10;
+        if (defender.health <= 0) {
+          players.splice(j, 1);
+          j--;
+        }
+      }
+    }
+  }
+}
+
+// Game over
+alert("Game over! " + players[0].name + " is the winner!");
